@@ -40,6 +40,69 @@
       table.timeline tbody tr{display:block;padding:8px 0}
       table.timeline td{display:block;padding:6px 0}
     }
+
+    /* ---- FORM đẹp hơn ---- */
+    .add-form {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      transition: 0.3s ease;
+    }
+    .add-form strong {
+      display:block;
+      font-size:16px;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+    .add-form input,
+    .add-form textarea,
+    .add-form select {
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.1);
+      background:rgba(255,255,255,0.06);
+      color:#e5e7eb;
+      font-size:14px;
+      outline:none;
+      transition:0.2s;
+    }
+    .add-form input:focus,
+    .add-form textarea:focus,
+    .add-form select:focus {
+      border-color:var(--accent);
+      background:rgba(255,255,255,0.1);
+    }
+    .add-form textarea{resize:vertical;min-height:70px}
+    .add-form .controls{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .add-form button{
+      flex:1;
+      background:var(--accent);
+      color:white;
+      font-weight:600;
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .add-form button:hover{
+      box-shadow:0 0 10px var(--accent);
+      transform:translateY(-1px);
+    }
+    .add-form button.ghost{
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.1);
+      color:#e5e7eb;
+    }
   </style>
 </head>
 <body>
@@ -66,16 +129,18 @@
         </div>
 
         <div style="width:320px">
-          <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:12px;border-radius:10px">
+          <div class="add-form">
             <strong>Thêm sự kiện mới</strong>
-            <div class="form-row">
-              <div class="input"><input id="date" type="date"/></div>
-              <div style="width:100px"><input id="time" type="time"/></div>
+            <div class="form-row" style="display:flex;gap:10px;">
+              <input id="date" type="date"/>
+              <input id="time" type="time"/>
             </div>
             <div class="form-row" style="margin-top:10px">
-              <div class="input"><input id="title" placeholder="Tiêu đề" /></div>
+              <input id="title" placeholder="Tiêu đề" />
             </div>
-            <div style="margin-top:10px"><textarea id="desc" placeholder="Mô tả ngắn..."></textarea></div>
+            <div style="margin-top:10px">
+              <textarea id="desc" placeholder="Mô tả ngắn..."></textarea>
+            </div>
             <div style="margin-top:10px">
               <select id="statusSelect">
                 <option value="todo">To do</option>
