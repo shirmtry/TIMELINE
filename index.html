@@ -34,28 +34,11 @@
     .status.todo{background:rgba(59,130,246,0.08);color:#60a5fa}
     .status.inprog{background:rgba(250,204,21,0.08);color:#f59e0b}
 
-    /* Vertical timeline visual */
-    .timeline-visual{position:relative;padding:12px 0}
-    .timeline-visual::before{content:"";position:absolute;left:40px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02))}
-    .dot{position:absolute;left:32px;width:16px;height:16px;border-radius:50%;background:var(--glass);display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,0.04)}
-
-    /* Form */
-    .form-row{display:flex;gap:12px;margin-top:12px}
-    .form-row .input{flex:1}
-    input, textarea, select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
-    textarea{resize:vertical;min-height:60px}
-    .controls{display:flex;gap:8px;margin-top:12px}
-    button{background:var(--accent);border:none;color:white;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
-    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.05)}
-
-    /* Responsive */
     @media (max-width:700px){
       .date{display:block;width:100%;}
       table.timeline thead{display:none}
       table.timeline tbody tr{display:block;padding:8px 0}
       table.timeline td{display:block;padding:6px 0}
-      .timeline-visual::before{left:16px}
-      .dot{left:8px}
     }
   </style>
 </head>
@@ -67,7 +50,7 @@
         <p class="lead">Giao diện timeline + bảng, có form để thêm sự kiện và xuất CSV.</p>
       </div>
       <div>
-        <small class="lead">Generated: <span id="now"></span></small>
+        <small class="lead">Thời gian hiện tại: <span id="now"></span></small>
       </div>
     </header>
 
@@ -78,9 +61,7 @@
             <thead>
               <tr><th style="width:120px">Ngày</th><th>Tiêu đề</th><th>Mô tả</th><th style="width:120px">Trạng thái</th></tr>
             </thead>
-            <tbody>
-              <!-- rows injected by JS -->
-            </tbody>
+            <tbody></tbody>
           </table>
         </div>
 
@@ -108,7 +89,6 @@
               <button id="clearBtn" class="ghost">Xóa tất cả</button>
             </div>
           </div>
-
           <div style="margin-top:12px;color:var(--muted);font-size:13px">Mẹo: chạm vào hàng để chỉnh sửa/xóa.</div>
         </div>
       </div>
@@ -116,7 +96,6 @@
   </div>
 
   <script>
-    // Sample data
     const data = [
       {date:'2025-10-01',time:'09:00',title:'Bắt đầu dự án',desc:'Lên kế hoạch và phân công',status:'inprog'},
       {date:'2025-10-05',time:'14:30',title:'Giao milestone 1',desc:'Hoàn thành mẫu UI và API cơ bản',status:'todo'},
@@ -139,20 +118,23 @@
       data.forEach((item, idx)=>{
         const tr = document.createElement('tr');
         tr.dataset.index = idx;
-
         tr.innerHTML = `
           <td class="date">${formatDate(item.date)}<div style="font-size:12px;color:var(--muted)">${item.time || ''}</div></td>
           <td class="title">${escapeHtml(item.title || '')}</td>
           <td class="desc">${escapeHtml(item.desc || '')}</td>
           <td><span class="status ${item.status}">${statusText(item.status)}</span></td>
         `;
-
         tr.addEventListener('click', ()=> openEdit(idx));
         tbody.appendChild(tr);
       });
-
-      nowEl.textContent = new Date().toLocaleString('vi-VN');
     }
+
+    function updateClock(){
+      const now = new Date();
+      nowEl.textContent = now.toLocaleString('vi-VN');
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
     function statusText(k){
       if(k==='done') return 'Done';
@@ -164,31 +146,26 @@
       return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    // Add item from form
     document.getElementById('addBtn').addEventListener('click', ()=>{
       const date = document.getElementById('date').value;
       const time = document.getElementById('time').value;
       const title = document.getElementById('title').value.trim();
       const desc = document.getElementById('desc').value.trim();
       const status = document.getElementById('statusSelect').value;
-
       if(!date || !title){
         alert('Vui lòng điền ít nhất ngày và tiêu đề.');
         return;
       }
-
       data.push({date,time,title,desc,status});
-      // clear inputs
       document.getElementById('title').value = '';
       document.getElementById('desc').value = '';
       render();
     });
 
-    // Edit/delete modal (simple prompt-based)
     function openEdit(idx){
       const item = data[idx];
       const newTitle = prompt('Chỉnh tiêu đề', item.title);
-      if(newTitle === null) return; // canceled
+      if(newTitle === null) return;
       if(newTitle === ''){
         if(confirm('Tiêu đề trống — xóa mục này?')){ data.splice(idx,1); render(); }
         return;
@@ -200,7 +177,6 @@
       render();
     }
 
-    // Export CSV
     document.getElementById('exportBtn').addEventListener('click', ()=>{
       const headers = ['date','time','title','desc','status'];
       const rows = data.map(r => headers.map(h => '"'+String(r[h]||'').replace(/"/g,'""')+'"').join(','));
@@ -211,7 +187,6 @@
       URL.revokeObjectURL(url);
     });
 
-    // Clear all
     document.getElementById('clearBtn').addEventListener('click', ()=>{
       if(confirm('Xóa tất cả sự kiện?')){ data.length = 0; render(); }
     });
